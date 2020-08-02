@@ -4,4 +4,10 @@ while(a>b)
     if (ccc){
         do things;
     }
+    else if (eee){
+        do otherthings;
+    }
+    else{
+        do elsethings;
+    }
 }
