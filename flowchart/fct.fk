@@ -8,6 +8,6 @@ while(a>b)
         do otherthings;
     }
     else{
-        do elsethings;
+        do elthings;
     }
 }

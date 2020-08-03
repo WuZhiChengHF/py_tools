@@ -29,7 +29,13 @@ class fnode(object):
         self.left = left
         self.right = right
         self.down = down
-        self.kw = kw
+        self._kw = kw
+
+    @property
+    def kw(self): return self._kw
+    
+    @kw.setter
+    def kw(self, value): self._kw = value
 
 
 class compile(object):
@@ -44,8 +50,9 @@ class compile(object):
         self._parse_fk()
 
     def _get_kw(self, fstr):
-        rest = re.search(r'^(while|if|else if|else)$', fstr, re.IGNORECASE)
-        return rest.group() if rest else None
+        #rest = re.search(r'^(while|if|else if|else)$', fstr, re.IGNORECASE)
+        rest = re.search(r'(while|if|else if|else)', fstr, re.IGNORECASE)
+        return rest and rest.group() or None
 
     @catch_error()
     def _process_fk(self):
@@ -58,26 +65,24 @@ class compile(object):
     def _parse_fk(self):
         segs = self.content.split("{") or []
         self.fk_segs = list()
+
         for fk in segs:
             self.fk_segs.extend(fk.split(";"))
-        print(self.fk_segs)
+
+        for i in self.fk_segs:
+            self._parse_fk_sg_node(i)
+
+        print([i.kw for i in self.stack])
         
     def _parse_fk_sg_node(self, nstr):
         node = fnode(name=nstr)
-        if self.is_kw(nstr, "while"):
-            node.kw = "while"
-            self.stack.append(node)
-        elif self.is_kw(nstr, "else if"):
-            node.kw = "else if"
-        elif self.is_kw(nstr, "if"):
-            node.kw = "else"
-        elif self.is_kw(nstr, "else"):
-            node.kw = "else"
+        node.kw = self._get_kw(nstr)
 
+        if node.kw: self.stack.append(node)
         self.nodelist.append(node)
+
         return node
 
-        
 
 if '__main__' == __name__:
     compile("./fct.fk")
