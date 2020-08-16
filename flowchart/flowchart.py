@@ -48,6 +48,10 @@ class compile(object):
             self.content = fd.read()
         self._process_fk()
         self._parse_fk()
+        self.__connect_node()
+
+    def __connect_node(self):
+        for node in self.nodelist:
 
     def _get_kw(self, fstr):
         #rest = re.search(r'^(while|if|else if|else)$', fstr, re.IGNORECASE)
@@ -72,7 +76,8 @@ class compile(object):
         for i in self.fk_segs:
             self._parse_fk_sg_node(i)
 
-        print([i.kw for i in self.stack])
+        while self.stack: print(self.stack.pop(-1).kw)
+        #print([i.__dict__ for i in self.nodelist])
         
     def _parse_fk_sg_node(self, nstr):
         node = fnode(name=nstr)
