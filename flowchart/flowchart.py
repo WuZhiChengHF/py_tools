@@ -2,6 +2,7 @@
 import re
 import requests as req
 import graphviz as g
+import random as rd
 
 
 def catch_error(value=None):
@@ -19,11 +20,14 @@ def catch_error(value=None):
 
 
 class fnode(object):
-    def __init__(self, name=None, left=None, right=None, down=None, kw=False):
+    def __init__(self, name=None, 
+            left=None, right=None, 
+            down=None, up=None, kw=False):
         self.name = name
         self.left = left
         self.right = right
         self.down = down
+        self.up = up
         self._kw = kw
 
     @property
@@ -37,13 +41,15 @@ class fnode(object):
     def __str__(self):
         return " --> ".join([
             str(i)
-            for i in [self.name, self.left, self.right, self.down, self._kw]
+            for i in [self.name, self.left, self.right, 
+                self.up, self.down, self._kw]
         ])
 
 
 class compile(object):
     def __init__(self, fk):
         self.content = None
+        self.rdint = lambda x=10000: rd.randint(1, x)
         self.del_char = lambda x, c: re.sub(r" *\%s *" % str(c), c, x)
         self.stack = list()
         self.nodelist = list()
@@ -52,8 +58,12 @@ class compile(object):
         self._process_fk()
 
     def _connect_node(self):
-        for node in self.nodelist:
-            print(node)
+        for i, node in enumerate(self.nodelist):
+            flag = self.rdint() if i%2 == 0 else flag + 1
+            setattr(node, "down" if i%2 == 0 else "up", flag)
+
+        for i, node in enumerate(self.nodelist):
+            print(i, str(node))
 
     def _get_kw(self, fstr):
         rest = re.search(r'(while|if|else if|else)', fstr, re.IGNORECASE)
