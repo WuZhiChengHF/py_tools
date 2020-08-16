@@ -19,12 +19,7 @@ def catch_error(value=None):
 
 
 class fnode(object):
-    def __init__(self,
-                 name  = None,
-                 left  = None,
-                 right = None,
-                 down  = None,
-                 kw    = False):
+    def __init__(self, name=None, left=None, right=None, down=None, kw=False):
         self.name = name
         self.left = left
         self.right = right
@@ -32,10 +27,18 @@ class fnode(object):
         self._kw = kw
 
     @property
-    def kw(self): return self._kw
-    
+    def kw(self):
+        return self._kw
+
     @kw.setter
-    def kw(self, value): self._kw = value
+    def kw(self, value):
+        self._kw = value
+
+    def __str__(self):
+        return " --> ".join([
+            str(i)
+            for i in [self.name, self.left, self.right, self.down, self._kw]
+        ])
 
 
 class compile(object):
@@ -47,14 +50,12 @@ class compile(object):
         with open(fk, 'r') as fd:
             self.content = fd.read()
         self._process_fk()
-        self._parse_fk()
-        self.__connect_node()
 
-    def __connect_node(self):
+    def _connect_node(self):
         for node in self.nodelist:
+            print(node)
 
     def _get_kw(self, fstr):
-        #rest = re.search(r'^(while|if|else if|else)$', fstr, re.IGNORECASE)
         rest = re.search(r'(while|if|else if|else)', fstr, re.IGNORECASE)
         return rest and rest.group() or None
 
@@ -64,6 +65,8 @@ class compile(object):
         self.content = self.content.replace("\r", "").replace("\n", "")
         for c in ['(', ')', '{', '}']:
             self.content = self.del_char(self.content, c)
+        self._parse_fk()
+        self._connect_node()
 
     @catch_error()
     def _parse_fk(self):
@@ -76,9 +79,9 @@ class compile(object):
         for i in self.fk_segs:
             self._parse_fk_sg_node(i)
 
-        while self.stack: print(self.stack.pop(-1).kw)
-        #print([i.__dict__ for i in self.nodelist])
-        
+        #while self.stack:
+        #    print(self.stack.pop(-1).kw)
+
     def _parse_fk_sg_node(self, nstr):
         node = fnode(name=nstr)
         node.kw = self._get_kw(nstr)
