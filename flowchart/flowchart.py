@@ -52,15 +52,32 @@ class block(object):
         self.out = None
         self.nodes = nodes
         self.sub_block = None
+        self.rdint = lambda x=10000: rd.randint(1, x)
 
-    def _connect_block_nodes(self):
-        pass
+    def _connect_block_nodes(self, nodes=None):
+        start, end, aw_in = 0, 0, 0
+        if nodes is None: nodes = self.nodes
+
+        // process while
+        // process if else
+        // process single node
+
+        for i, node in enumerate(nodes):
+
+            if node.kw:
+                end = self._calc_blk_pair(self, start)
+                aw_in = self._connect_block_nodes(aw_in, nodes[i, end])
+            else:
+                aw_in = self._connect_block_nodes(aw_in, [nodes[i]])
+
+            if start > 0: start = end + 1
+
+        return aw_in
 
 
 class compile(object):
     def __init__(self, fk):
         self.content = None
-        self.rdint = lambda x=10000: rd.randint(1, x)
         self.del_char = lambda x, c: re.sub(r" *\%s *" % str(c), c, x)
         self.stack = list()
         self.nodelist = list()
@@ -68,11 +85,36 @@ class compile(object):
             self.content = fd.read()
         self._process_fk()
 
-    def _connect_node(self):
-        start = 0
+    def _calc_blk_pair(self, start):
+        left_brackets = 0
+        right_brackets = 0
         for i, node in enumerate(self.nodelist):
-            print(i, str(node))
-            #if node.kw:
+            if i < start: continue
+            if node.name.find("{") >=0: left_brackets += 1
+            elif node.name.find("}") >=0: right_brackets += 1
+            if left_brackets == right_brackets and left_brackets >0:
+                return i
+        raise Exception("node: %s can not get pair node" % str(self.nodelist[start]))
+
+    def _connect_node(self):
+        start_node = fnode("start")
+        end_node = fnode("end")
+        start_node.down = 0
+        b = block(0, *self.nodelist)
+        out = b.connect_block_nodes()
+        end_node.up = out
+
+        #start, end, aw_in = 0, 0, 0
+        #for i, node in enumerate(self.nodelist):
+
+        #    if node.kw:
+        #        end = self._calc_blk_pair(self, start)
+        #        b = block(aw_in, self.nodelist[i, end])
+        #    else:
+        #        b = block(aw_in, [self.nodelist[i]])
+
+        #    aw_in = b.connect_block_nodes()
+        #    if start > 0: start = end + 1
 
         print("*"*20)
         for i, node in enumerate(self.stack):
