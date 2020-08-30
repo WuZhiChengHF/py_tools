@@ -104,8 +104,12 @@ class compile(object):
 
     def _parse_fk_sg_node(self, nstr):
 
-        for i in nstr.split("}"):
-            if i == "": i="}"
+        tstr = ""
+        for i, s in enumerate(nstr):
+            tstr += (("" if i==0 else ",") + s + \
+                ("" if (i==len(nstr)-1) else ",")) if s=="}" else s
+
+        for i in tstr.split(","):
 
             node = fnode(name=i)
             node.kw = self._get_kw(i)
