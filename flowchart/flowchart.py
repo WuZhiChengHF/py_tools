@@ -20,9 +20,13 @@ def catch_error(value=None):
 
 
 class fnode(object):
-    def __init__(self, name=None, 
-            left=None, right=None, 
-            down=None, up=None, kw=False):
+    def __init__(self,
+                 name=None,
+                 left=None,
+                 right=None,
+                 down=None,
+                 up=None,
+                 kw=False):
         self.name = name
         self.left = left
         self.right = right
@@ -40,9 +44,8 @@ class fnode(object):
 
     def __str__(self):
         return " --> ".join([
-            str(i)
-            for i in [self.name, self.left, self.right, 
-                self.up, self.down, self._kw]
+            str(i) for i in
+            [self.name, self.left, self.right, self.up, self.down, self._kw]
         ])
 
 
@@ -53,6 +56,7 @@ class block(object):
         self.nodes = nodes
         self.sub_block = None
         self.rdint = lambda x=10000: rd.randint(1, x)
+        self.bak_aw = list()
 
     def _connect_single_block_node(self, aw_in, node):
         node.up = aw_in
@@ -60,10 +64,10 @@ class block(object):
         return node.down + 1
 
     def _connect_speical_block_node(self, aw_in, node):
-        if node.name.find("while") >=0:
+        if node.name.find("while") >= 0:
             node.up = aw_in
             s = node.down = self.rdint()
-            return s+1
+            return s + 1
 
     def _set_while_node_ret(self, node, ret_num):
         node.right = ret_num
@@ -75,11 +79,27 @@ class block(object):
         for i, node in enumerate(nodes):
 
             if node.kw:
+
+                name = node[i].name
+                is_choice = (name.find("if") >= 0 or name.find("else") >= 0)
+
+                if is_choice:
+                    s = node[i].left = self.rdint()
+                    aw_in = s + 1
+
                 end = self._calc_blk_pair(self, start)
                 aw_in = self._connect_speical_block_node(aw_in, node[i])
-                aw_in = self._connect_block_nodes(aw_in, nodes[i+1, end])
-                if node[i].name.find("while") >=0:
-                    node[i].right = aw_in+1
+                aw_in = self._connect_block_nodes(aw_in, nodes[i + 1, end])
+
+                if name.find("while") >= 0:
+                    node[i].right = aw_in + 1
+                    node[i].left = self.rdint()
+                    aw_in = node[i].left + 1
+                elif is_choice:
+                    s = node[i].down = self.rdint()
+                    # self.bak_aw.append(aw_in)
+                    aw_in = s + 1
+
             else:
                 aw_in = self._connect_single_block_node(aw_in, nodes[i])
 
@@ -103,11 +123,12 @@ class compile(object):
         right_brackets = 0
         for i, node in enumerate(self.nodelist):
             if i < start: continue
-            if node.name.find("{") >=0: left_brackets += 1
-            elif node.name.find("}") >=0: right_brackets += 1
-            if left_brackets == right_brackets and left_brackets >0:
+            if node.name.find("{") >= 0: left_brackets += 1
+            elif node.name.find("}") >= 0: right_brackets += 1
+            if left_brackets == right_brackets and left_brackets > 0:
                 return i
-        raise Exception("node: %s can not get pair node" % str(self.nodelist[start]))
+        raise Exception("node: %s can not get pair node" %
+                        str(self.nodelist[start]))
 
     def _connect_node(self):
         start_node = fnode("start")
@@ -129,7 +150,7 @@ class compile(object):
         #    aw_in = b.connect_block_nodes()
         #    if start > 0: start = end + 1
 
-        print("*"*20)
+        print("*" * 20)
         for i, node in enumerate(self.stack):
             print(i, str(node))
 
@@ -166,12 +187,12 @@ class compile(object):
 
         for i in tstr.split(","):
 
-            if not i:continue
+            if not i: continue
 
             node = fnode(name=i)
             node.kw = self._get_kw(i)
 
-            if node.kw: 
+            if node.kw:
                 node.name += "{"
                 self.stack.append(node)
 
