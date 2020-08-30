@@ -63,8 +63,8 @@ class block(object):
         start, end, aw_in = 0, 0, 0
         if nodes is None: nodes = self.nodes
 
-        // process while
-        // process if else
+        # process while
+        # process if else
 
         for i, node in enumerate(nodes):
 
