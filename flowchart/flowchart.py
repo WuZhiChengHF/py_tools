@@ -47,9 +47,14 @@ class fnode(object):
 
 
 class block(object):
-    def __init__(self, inn, out):
+    def __init__(self, inn, nodes=None, sblock=None):
         self.inn = inn
-        self.out = out
+        self.out = None
+        self.nodes = nodes
+        self.sub_block = None
+
+    def _connect_block_nodes(self):
+        pass
 
 
 class compile(object):
@@ -64,11 +69,13 @@ class compile(object):
         self._process_fk()
 
     def _connect_node(self):
+        start = 0
         for i, node in enumerate(self.nodelist):
-            flag = self.rdint() if i%2 == 0 else flag + 1
-            setattr(node, "down" if i%2 == 0 else "up", flag)
+            print(i, str(node))
+            #if node.kw:
 
-        for i, node in enumerate(self.nodelist):
+        print("*"*20)
+        for i, node in enumerate(self.stack):
             print(i, str(node))
 
     def _get_kw(self, fstr):
@@ -95,17 +102,19 @@ class compile(object):
         for i in self.fk_segs:
             self._parse_fk_sg_node(i)
 
-        #while self.stack:
-        #    print(self.stack.pop(-1).kw)
-
     def _parse_fk_sg_node(self, nstr):
-        node = fnode(name=nstr)
-        node.kw = self._get_kw(nstr)
 
-        if node.kw: self.stack.append(node)
-        self.nodelist.append(node)
+        for i in nstr.split("}"):
+            if i == "": i="}"
 
-        return node
+            node = fnode(name=i)
+            node.kw = self._get_kw(nstr)
+
+            if node.kw: 
+                node.name += "{"
+                self.stack.append(node)
+
+            self.nodelist.append(node)
 
 
 if '__main__' == __name__:
