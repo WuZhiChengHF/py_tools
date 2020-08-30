@@ -46,6 +46,12 @@ class fnode(object):
         ])
 
 
+class block(object):
+    def __init__(self, inn, out):
+        self.inn = inn
+        self.out = out
+
+
 class compile(object):
     def __init__(self, fk):
         self.content = None
