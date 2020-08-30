@@ -111,6 +111,8 @@ class compile(object):
 
         for i in tstr.split(","):
 
+            if not i:continue
+
             node = fnode(name=i)
             node.kw = self._get_kw(i)
 
