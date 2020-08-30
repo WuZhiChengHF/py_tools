@@ -108,7 +108,7 @@ class compile(object):
             if i == "": i="}"
 
             node = fnode(name=i)
-            node.kw = self._get_kw(nstr)
+            node.kw = self._get_kw(i)
 
             if node.kw: 
                 node.name += "{"
