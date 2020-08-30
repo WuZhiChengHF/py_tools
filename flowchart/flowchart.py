@@ -54,13 +54,17 @@ class block(object):
         self.sub_block = None
         self.rdint = lambda x=10000: rd.randint(1, x)
 
-    def _connect_block_nodes(self, nodes=None):
+    def _connect_single_block_nodes(self, aw_in, node):
+        node.up = aw_in
+        node.down = self.rdint()
+        return node.down + 1
+
+    def _connect_block_nodes(self, aw_in, nodes=None):
         start, end, aw_in = 0, 0, 0
         if nodes is None: nodes = self.nodes
 
         // process while
         // process if else
-        // process single node
 
         for i, node in enumerate(nodes):
 
@@ -68,7 +72,7 @@ class block(object):
                 end = self._calc_blk_pair(self, start)
                 aw_in = self._connect_block_nodes(aw_in, nodes[i, end])
             else:
-                aw_in = self._connect_block_nodes(aw_in, [nodes[i]])
+                aw_in = self._connect_single_block_nodes(aw_in, nodes[i])
 
             if start > 0: start = end + 1
 
