@@ -109,10 +109,13 @@ class block(object):
                 if is_choice:
                     s = node[i].down = self._get_conn_num()
                     # 保存if的接口值
-                    if is_if_choice: self.bak_aw.append(aw_in)
+                    if is_if_choice:
+                        self.bak_aw.append(aw_in)
                     # else分支使用if的接口值
                     else:
-                        if_num = self.bak_aw.pop()
+                        if_num = self.bak_aw[-1]
+                        if (end+1) <=len(self.nodes) and self.nodes[end+1].name.find("else") < 0:
+                            self.bak_aw.pop()
                         self._modify_node_num(aw_in-1, if_num-1, nodes[i+1, end])
                         #aw_in = if_num
                     aw_in = s + 1
