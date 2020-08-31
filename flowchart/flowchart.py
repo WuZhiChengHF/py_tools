@@ -72,6 +72,12 @@ class block(object):
     def _set_while_node_ret(self, node, ret_num):
         node.right = ret_num
 
+    def _modify_node_num(old_val, new_val, nodes):
+        for node in nodes:
+            if node.down == old_val:
+                node.down = new_val
+                break
+
     def _connect_block_nodes(self, aw_in, nodes=None):
         start, end = 0, 0
         if nodes is None: nodes = self.nodes
@@ -82,8 +88,10 @@ class block(object):
 
                 name = node[i].name
                 is_choice = (name.find("if") >= 0 or name.find("else") >= 0)
+                is_if_choice = (name.find("if") >= 0 and name.find("else") < 0)
+                is_else_choice = (name.find("if") < 0 and name.find("else") >= 0)
 
-                if is_choice:
+                if is_if_choice:
                     s = node[i].left = self.rdint()
                     aw_in = s + 1
 
@@ -93,7 +101,13 @@ class block(object):
 
                 if is_choice:
                     s = node[i].down = self.rdint()
-                    # self.bak_aw.append(aw_in)
+                    # 保存if的接口值
+                    if is_if_choice: self.bak_aw.append(aw_in)
+                    # else分支使用if的接口值
+                    else:
+                        if_num = self.bak_aw.pop()
+                        self._modify_node_num(aw_in-1, if_num-1, nodes[i+1, end])
+                        #aw_in = if_num
                     aw_in = s + 1
                 elif name.find("while") >= 0:
                     node[i].right = aw_in + 1
