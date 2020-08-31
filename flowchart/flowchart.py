@@ -107,7 +107,6 @@ class block(object):
                 aw_in = self._connect_block_nodes(aw_in, nodes[i + 1, end])
 
                 if is_choice:
-                    s = node[i].down = self._get_conn_num()
                     # 保存if的接口值
                     if is_if_choice:
                         self.bak_aw.append(aw_in)
@@ -118,6 +117,7 @@ class block(object):
                             self.bak_aw.pop()
                         self._modify_node_num(aw_in-1, if_num-1, nodes[i+1, end])
                         #aw_in = if_num
+                    s = node[i].down = self._get_conn_num()
                     aw_in = s + 1
                 elif name.find("while") >= 0:
                     node[i].right = aw_in + 1
