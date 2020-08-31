@@ -50,11 +50,10 @@ class fnode(object):
 
 
 class block(object):
-    def __init__(self, inn, nodes=None, sblock=None):
+    def __init__(self, inn, nodes=None):
         self.inn = inn
         self.out = None
         self.nodes = nodes
-        self.sub_block = None
         self.rdint = lambda x=10000: rd.randint(1, x)
         self.conn_nums = list()
         self.bak_aw = list()
@@ -84,6 +83,9 @@ class block(object):
             if node.down == old_val:
                 node.down = new_val
                 break
+
+    def __call__(self):
+        self._connect_block_nodes(0, self.nodes)
 
     def _connect_block_nodes(self, aw_in, nodes=None):
         start, end = 0, 0
@@ -155,12 +157,14 @@ class compile(object):
                         str(self.nodelist[start]))
 
     def _connect_node(self):
-        start_node = fnode("start")
-        end_node = fnode("end")
+        start_node = fnode(name="start")
+        end_node = fnode(name="end")
         start_node.down = 0
-        b = block(0, *self.nodelist)
-        out = b.connect_block_nodes()
-        end_node.up = out
+        b = block(0, self.nodelist)
+        print("*" * 10+" start node connect "+"*" * 10)
+        #out = b.connect_block_nodes()
+        #out = b()
+        end_node.up = b()
 
         #start, end, aw_in = 0, 0, 0
         #for i, node in enumerate(self.nodelist):
