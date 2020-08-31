@@ -56,17 +56,24 @@ class block(object):
         self.nodes = nodes
         self.sub_block = None
         self.rdint = lambda x=10000: rd.randint(1, x)
+        self.conn_nums = list()
         self.bak_aw = list()
+
+    def _get_conn_num(self):
+        s = self.rdint()
+        if s not in self.conn_nums:
+            return s
+        return self._get_conn_num()
 
     def _connect_single_block_node(self, aw_in, node):
         node.up = aw_in
-        node.down = self.rdint()
+        node.down = self._get_conn_num()
         return node.down + 1
 
     def _connect_speical_block_node(self, aw_in, node):
         if node.name.find("while") >= 0:
             node.up = aw_in
-            s = node.down = self.rdint()
+            s = node.down = self._get_conn_num()
             return s + 1
 
     def _set_while_node_ret(self, node, ret_num):
@@ -92,7 +99,7 @@ class block(object):
                 is_else_choice = (name.find("if") < 0 and name.find("else") >= 0)
 
                 if is_if_choice:
-                    s = node[i].left = self.rdint()
+                    s = node[i].left = self._get_conn_num()
                     aw_in = s + 1
 
                 end = self._calc_blk_pair(self, start)
@@ -100,7 +107,7 @@ class block(object):
                 aw_in = self._connect_block_nodes(aw_in, nodes[i + 1, end])
 
                 if is_choice:
-                    s = node[i].down = self.rdint()
+                    s = node[i].down = self._get_conn_num()
                     # 保存if的接口值
                     if is_if_choice: self.bak_aw.append(aw_in)
                     # else分支使用if的接口值
@@ -111,7 +118,7 @@ class block(object):
                     aw_in = s + 1
                 elif name.find("while") >= 0:
                     node[i].right = aw_in + 1
-                    node[i].left = self.rdint()
+                    node[i].left = self._get_conn_num()
                     aw_in = node[i].left + 1
 
             else:
