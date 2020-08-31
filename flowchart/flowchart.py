@@ -91,14 +91,14 @@ class block(object):
                 aw_in = self._connect_speical_block_node(aw_in, node[i])
                 aw_in = self._connect_block_nodes(aw_in, nodes[i + 1, end])
 
-                if name.find("while") >= 0:
-                    node[i].right = aw_in + 1
-                    node[i].left = self.rdint()
-                    aw_in = node[i].left + 1
-                elif is_choice:
+                if is_choice:
                     s = node[i].down = self.rdint()
                     # self.bak_aw.append(aw_in)
                     aw_in = s + 1
+                elif name.find("while") >= 0:
+                    node[i].right = aw_in + 1
+                    node[i].left = self.rdint()
+                    aw_in = node[i].left + 1
 
             else:
                 aw_in = self._connect_single_block_node(aw_in, nodes[i])
