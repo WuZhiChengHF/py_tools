@@ -85,7 +85,7 @@ class block(object):
                 break
 
     def __call__(self):
-        self._connect_block_nodes(0, self.nodes)
+        return self._connect_block_nodes(0, self.nodes)
 
     def _connect_block_nodes(self, aw_in, nodes=None):
         start, end = 0, 0
