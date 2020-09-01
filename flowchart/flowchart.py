@@ -74,6 +74,7 @@ class block(object):
             node.up = aw_in
             s = node.down = self._get_conn_num()
             return s + 1
+        return aw_in
 
     def _set_while_node_ret(self, node, ret_num):
         node.right = ret_num
@@ -85,9 +86,9 @@ class block(object):
                 break
 
     def __call__(self):
-        return self._connect_block_nodes(0, self.nodes)
+        return self._connect_block_nodes()
 
-    def _connect_block_nodes(self, aw_in, nodes=None):
+    def _connect_block_nodes(self, aw_in=0, nodes=None):
         start, end = 0, 0
         if nodes is None: nodes = self.nodes
 
@@ -95,17 +96,17 @@ class block(object):
 
             if node.kw:
 
-                name = node[i].name
+                name = node.name
                 is_choice = (name.find("if") >= 0 or name.find("else") >= 0)
                 is_if_choice = (name.find("if") >= 0 and name.find("else") < 0)
                 is_else_choice = (name.find("if") < 0 and name.find("else") >= 0)
 
                 if is_if_choice:
-                    s = node[i].left = self._get_conn_num()
+                    s = node.left = self._get_conn_num()
                     aw_in = s + 1
 
                 end = self._calc_blk_pair(self, start)
-                aw_in = self._connect_speical_block_node(aw_in, node[i])
+                aw_in = self._connect_speical_block_node(aw_in, node)
                 aw_in = self._connect_block_nodes(aw_in, nodes[i + 1, end])
 
                 if is_choice:
@@ -119,12 +120,12 @@ class block(object):
                             self.bak_aw.pop()
                         self._modify_node_num(aw_in-1, if_num-1, nodes[i+1, end])
                         #aw_in = if_num
-                    s = node[i].down = self._get_conn_num()
+                    s = node.down = self._get_conn_num()
                     aw_in = s + 1
                 elif name.find("while") >= 0:
-                    node[i].right = aw_in + 1
-                    node[i].left = self._get_conn_num()
-                    aw_in = node[i].left + 1
+                    node.right = aw_in + 1
+                    node.left = self._get_conn_num()
+                    aw_in = node.left + 1
 
             else:
                 aw_in = self._connect_single_block_node(aw_in, nodes[i])
