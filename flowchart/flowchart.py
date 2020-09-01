@@ -105,7 +105,7 @@ class block(object):
                     s = node.left = self._get_conn_num()
                     aw_in = s + 1
 
-                end = self._calc_blk_pair(self, start)
+                end = self._calc_blk_pair(start)
                 aw_in = self._connect_speical_block_node(aw_in, node)
                 aw_in = self._connect_block_nodes(aw_in, nodes[i + 1, end])
 
