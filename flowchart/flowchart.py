@@ -88,6 +88,18 @@ class block(object):
     def __call__(self):
         return self._connect_block_nodes()
 
+    def _calc_blk_pair(self, start):
+        left_brackets = 0
+        right_brackets = 0
+        for i, node in enumerate(self.nodes):
+            if i < start: continue
+            if node.name.find("{") >= 0: left_brackets += 1
+            elif node.name.find("}") >= 0: right_brackets += 1
+            if left_brackets == right_brackets and left_brackets > 0:
+                return i
+        raise Exception("node: %s can not get pair node" %
+                        str(self.nodelist[start]))
+
     def _connect_block_nodes(self, aw_in=0, nodes=None):
         start, end = 0, 0
         if nodes is None: nodes = self.nodes
@@ -145,17 +157,6 @@ class compile(object):
             self.content = fd.read()
         self._process_fk()
 
-    def _calc_blk_pair(self, start):
-        left_brackets = 0
-        right_brackets = 0
-        for i, node in enumerate(self.nodelist):
-            if i < start: continue
-            if node.name.find("{") >= 0: left_brackets += 1
-            elif node.name.find("}") >= 0: right_brackets += 1
-            if left_brackets == right_brackets and left_brackets > 0:
-                return i
-        raise Exception("node: %s can not get pair node" %
-                        str(self.nodelist[start]))
 
     def _connect_node(self):
         start_node = fnode(name="start")
